@@ -101,7 +101,7 @@ func Load() (*Config, error) {
 			FromAddress:  getEnv("EMAIL_FROM", "noreply@budgettracker.com"),
 		},
 		Worker: WorkerConfig{
-			CleanupSchedule:    getEnv("CLEANUP_SCHEDULE", "0 2 * * *"), // 2 AM daily
+			CleanupSchedule:    getEnv("CLEANUP_SCHEDULE", "0 2 * * *"),        // 2 AM daily
 			AlertCheckSchedule: getEnv("ALERT_CHECK_SCHEDULE", "*/15 * * * *"), // Every 15 min
 			SessionCleanupDays: getIntEnv("SESSION_CLEANUP_DAYS", 30),
 			ExpiredTokenDays:   getIntEnv("EXPIRED_TOKEN_DAYS", 7),
