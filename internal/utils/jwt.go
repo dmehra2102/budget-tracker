@@ -26,7 +26,7 @@ func NewJWTAuth(secretKey string, expiry time.Duration) *JWTAuth {
 	}
 }
 
-func (a *JWTAuth) GenerateToken(userID, email string, ttl time.Duration) (string, error) {
+func (a *JWTAuth) GenerateToken(userID, email string) (string, error) {
 	claims := &Claims{
 		UserID: userID,
 		Email:  email,
