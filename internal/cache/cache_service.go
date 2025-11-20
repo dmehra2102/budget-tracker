@@ -22,10 +22,10 @@ type cacheService struct {
 }
 
 func NewCacheService(client *redis.Client, cfg *config.Config) CacheService {
-    return &cacheService{
-        client: client,
-        cfg:    cfg,
-    }
+	return &cacheService{
+		client: client,
+		cfg:    cfg,
+	}
 }
 
 func (s *cacheService) Get(ctx context.Context, key string, dest any) error {
@@ -55,11 +55,11 @@ func (s *cacheService) Delete(ctx context.Context, key string) error {
 }
 
 func (s *cacheService) DeletePattern(ctx context.Context, pattern string) error {
-    iter := s.client.Scan(ctx, 0, pattern, 0).Iterator()
-    for iter.Next(ctx) {
-        if err := s.client.Del(ctx, iter.Val()).Err(); err != nil {
-            return err
-        }
-    }
-    return iter.Err()
+	iter := s.client.Scan(ctx, 0, pattern, 0).Iterator()
+	for iter.Next(ctx) {
+		if err := s.client.Del(ctx, iter.Val()).Err(); err != nil {
+			return err
+		}
+	}
+	return iter.Err()
 }
