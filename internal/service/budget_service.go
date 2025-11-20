@@ -60,6 +60,8 @@ func (s *budgetService) CreateBudget(ctx context.Context, userID primitive.Objec
 		return nil, err
 	}
 
+	s.cache.Delete(ctx, "budgets:user:"+userID.Hex())
+
 	return budget, nil
 }
 
