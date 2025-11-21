@@ -11,6 +11,7 @@ require (
 	github.com/rs/zerolog v1.34.0
 	go.mongodb.org/mongo-driver v1.17.6
 	golang.org/x/crypto v0.42.0
+	golang.org/x/time v0.14.0
 )
 
 require (
