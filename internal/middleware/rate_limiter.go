@@ -11,22 +11,22 @@ import (
 )
 
 type client struct {
-	limiter *rate.Limiter
+	limiter  *rate.Limiter
 	lastSeen time.Time
 }
 
 type RateLimiter struct {
 	clients map[string]*client
-	mu sync.RWMutex
-	r rate.Limit
-	b int
+	mu      sync.RWMutex
+	r       rate.Limit
+	b       int
 }
 
 func NewRateLimiter(requestsPerSecond int, burst int) *RateLimiter {
 	rl := &RateLimiter{
 		clients: make(map[string]*client),
-		r: rate.Limit(requestsPerSecond),
-		b: burst,
+		r:       rate.Limit(requestsPerSecond),
+		b:       burst,
 	}
 
 	// cleanup goroutine
@@ -54,18 +54,18 @@ func (rl *RateLimiter) getLimiter(ip string) *rate.Limiter {
 	rl.mu.Lock()
 	defer rl.mu.Unlock()
 
-	c,exists := rl.clients[ip]
+	c, exists := rl.clients[ip]
 	if !exists {
 		limiter := rate.NewLimiter(rl.r, rl.b)
 		rl.clients[ip] = &client{
-			limiter: limiter,
+			limiter:  limiter,
 			lastSeen: time.Now(),
 		}
 		return limiter
 	}
 
 	c.lastSeen = time.Now()
-    return c.limiter
+	return c.limiter
 }
 
 func (rl *RateLimiter) cleanupClients() {
