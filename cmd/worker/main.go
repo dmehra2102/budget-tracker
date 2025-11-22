@@ -19,16 +19,16 @@ func main() {
 		log.Fatalf("Failed to load config: %v", err)
 	}
 
-	db,err := database.NewMongoDB(cfg)
+	db, err := database.NewMongoDB(cfg)
 	if err != nil {
-        log.Fatalf("Failed to connect to MongoDB: %v", err)
-    }
-    defer db.Close()
+		log.Fatalf("Failed to connect to MongoDB: %v", err)
+	}
+	defer db.Close()
 
-    // Initialize repositories
-    userRepo := repository.NewUserRepository(db.DB())
-    budgetRepo := repository.NewBudgetRepository(db.DB())
-    alertRepo := repository.NewAlertRepository(db.DB())
+	// Initialize repositories
+	userRepo := repository.NewUserRepository(db.DB())
+	budgetRepo := repository.NewBudgetRepository(db.DB())
+	alertRepo := repository.NewAlertRepository(db.DB())
 
 	// Initialize Services
 	emailService := service.NewEmailService(cfg)
@@ -43,11 +43,11 @@ func main() {
 	log.Println("Worker Started Successfully")
 
 	// Wait for interrupt signal
-    quit := make(chan os.Signal, 1)
-    signal.Notify(quit, syscall.SIGINT, syscall.SIGTERM)
-    <-quit
+	quit := make(chan os.Signal, 1)
+	signal.Notify(quit, syscall.SIGINT, syscall.SIGTERM)
+	<-quit
 
-    log.Println("Shutting down worker...")
-    cronWorker.Stop()
-    log.Println("Worker exited")
+	log.Println("Shutting down worker...")
+	cronWorker.Stop()
+	log.Println("Worker exited")
 }

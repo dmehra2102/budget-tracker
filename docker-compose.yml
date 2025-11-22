@@ -11,6 +11,7 @@ services:
       - ./scripts/init-mongo.js:/docker-entrypoint-initdb.d/init-mongo.js
     networks:
       - budget-tracker-network
+    command: ["mongod", "--quiet"]
   redis:
     image: redis:7-alpine
     container_name: budget-tracker-redis

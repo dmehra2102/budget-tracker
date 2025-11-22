@@ -5,6 +5,7 @@ import (
 	"time"
 
 	"github.com/dmehra2102/budget-tracker/internal/config"
+	"go.mongodb.org/mongo-driver/bson"
 	"go.mongodb.org/mongo-driver/mongo"
 	"go.mongodb.org/mongo-driver/mongo/options"
 	"go.mongodb.org/mongo-driver/mongo/readpref"
@@ -23,7 +24,10 @@ func NewMongoDB(cfg *config.Config) (*MongoDB, error) {
 		ApplyURI(cfg.Database.URI).
 		SetMaxPoolSize(cfg.Database.MaxPoolSize).
 		SetMinPoolSize(cfg.Database.MinPoolSize).
-		SetMaxConnIdleTime(5 * time.Minute)
+		SetMaxConnIdleTime(5 * time.Minute).
+		SetServerSelectionTimeout(10 * time.Second).
+		SetRetryWrites(true).
+		SetRetryReads(true)
 
 	client, err := mongo.Connect(ctx, clientOptions)
 	if err != nil {
@@ -64,11 +68,11 @@ func createIndexes(ctx context.Context, db *mongo.Database) error {
 	// Users collection indexes
 	userIndexes := []mongo.IndexModel{
 		{
-			Keys:    map[string]any{"email": 1},
+			Keys:    bson.D{{Key: "email", Value: 1}},
 			Options: options.Index().SetUnique(true),
 		},
 		{
-			Keys: map[string]any{"reset_token": 1},
+			Keys: bson.D{{Key: "reset_token", Value: 1}},
 		},
 	}
 	if _, err := db.Collection("users").Indexes().CreateMany(ctx, userIndexes); err != nil {
@@ -78,10 +82,10 @@ func createIndexes(ctx context.Context, db *mongo.Database) error {
 	// Budgets collection indexes
 	budgetIndexes := []mongo.IndexModel{
 		{
-			Keys: map[string]any{"user_id": 1, "start_date": -1},
+			Keys: bson.D{{Key: "user_id", Value: 1}, {Key: "start_date", Value: -1}},
 		},
 		{
-			Keys: map[string]any{"is_active": 1, "end_date": 1},
+			Keys: bson.D{{Key: "is_active", Value: 1}, {Key: "end_date", Value: 1}},
 		},
 	}
 	if _, err := db.Collection("budgets").Indexes().CreateMany(ctx, budgetIndexes); err != nil {
@@ -91,10 +95,10 @@ func createIndexes(ctx context.Context, db *mongo.Database) error {
 	// Expenses collection indexes
 	expenseIndexes := []mongo.IndexModel{
 		{
-			Keys: map[string]any{"budget_id": 1, "date": -1},
+			Keys: bson.D{{Key: "budget_id", Value: 1}, {Key: "date", Value: -1}},
 		},
 		{
-			Keys: map[string]any{"user_id": 1, "date": -1},
+			Keys: bson.D{{Key: "user_id", Value: 1}, {Key: "date", Value: -1}},
 		},
 	}
 	if _, err := db.Collection("expenses").Indexes().CreateMany(ctx, expenseIndexes); err != nil {
@@ -104,13 +108,13 @@ func createIndexes(ctx context.Context, db *mongo.Database) error {
 	// Alerts collection indexes
 	alertIndexes := []mongo.IndexModel{
 		{
-			Keys: map[string]any{"user_id": 1},
+			Keys: bson.D{{Key: "user_id", Value: 1}},
 		},
 		{
-			Keys: map[string]any{"budget_id": 1},
+			Keys: bson.D{{Key: "budget_id", Value: 1}},
 		},
 		{
-			Keys: map[string]any{"is_enabled": 1},
+			Keys: bson.D{{Key: "is_enabled", Value: 1}},
 		},
 	}
 	if _, err := db.Collection("alerts").Indexes().CreateMany(ctx, alertIndexes); err != nil {

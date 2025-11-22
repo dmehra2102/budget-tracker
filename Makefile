@@ -1,4 +1,4 @@
-.PHONY build run logs docker-up docker-down clean
+.PHONY: build run logs docker-up docker-down clean
 
 build:
 		go build -o bin/api cmd/api/main.go
