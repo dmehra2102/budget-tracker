@@ -1,0 +1,63 @@
+services:
+  mongodb:
+    image: mongo:6.0
+    container_name: budget-tracker-mongo
+    ports:
+      - "27017:27017"
+    environment:
+      - MONGO_INITDB_DATABASE=budget_tracker
+    volumes:
+      - mongo-data:/data/db
+      - ./scripts/init-mongo.js:/docker-entrypoint-initdb.d/init-mongo.js
+    networks:
+      - budget-tracker-network
+  redis:
+    image: redis:7-alpine
+    container_name: budget-tracker-redis
+    ports:
+      - "6379:6379"
+    volumes:
+      - redis-data:/data
+    networks:
+      - budget-tracker-network
+  api:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: budget-tracke-api
+    ports:
+      - "8080:8080"
+    environment:
+      - MONGO_URI=mongodb://mongodb:27017
+      - REDIS_HOST=redis
+      - REDIS_PORT=6379
+    depends_on:
+      - mongodb
+      - redis
+    networks:
+      - budget-tracker-network
+    command: ./api
+  worker:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: budget-tracker-worker
+    environment:
+      - MONGO_URI=mongodb://mongodb:27017
+      - REDIS_HOST=redis
+      - REDIS_PORT=6379
+    depends_on:
+      - mongodb
+      - redis
+      - api
+    networks:
+      - budget-tracker-network
+    command: ./worker
+
+volumes:
+  mongo-data:
+  redis-data:
+
+networks:
+  budget-tracker-network:
+    driver: bridge
