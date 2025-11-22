@@ -16,4 +16,5 @@ var (
 	ErrInternalServer     = errors.New("internal server error")
 	ErrRateLimitExceeded  = errors.New("rate limit exceeded")
 	ErrDatabaseError      = errors.New("database error")
+	ErrInvalidObjectID    = errors.New("invalid objectID")
 )

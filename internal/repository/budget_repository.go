@@ -77,22 +77,35 @@ func (r *budgetRepository) FindByUserID(ctx context.Context, userID primitive.Ob
 func (r *budgetRepository) Update(ctx context.Context, budget *domain.Budget) error {
 	budget.UpdatedAt = time.Now()
 
-	_, err := r.collection.UpdateOne(
+	result, err := r.collection.UpdateOne(
 		ctx,
 		bson.M{"_id": budget.ID},
 		bson.M{"$set": budget},
 	)
 
+	if result.MatchedCount == 0 {
+		return domain.ErrBudgetNotFound
+	}
+
 	return err
 }
 
 func (r *budgetRepository) Delete(ctx context.Context, id primitive.ObjectID) error {
-	_, err := r.collection.DeleteOne(ctx, bson.M{"_id": id})
-	return err
+	result, err := r.collection.DeleteOne(ctx, bson.M{"_id": id})
+
+	if err != nil {
+		return err
+	}
+
+	if result.DeletedCount == 0 {
+		return domain.ErrBudgetNotFound
+	}
+
+	return nil
 }
 
 func (r *budgetRepository) UpdateSpendAmount(ctx context.Context, id primitive.ObjectID, amount float64) error {
-	_, err := r.collection.UpdateOne(
+	result, err := r.collection.UpdateOne(
 		ctx,
 		bson.M{"_id": id},
 		bson.M{
@@ -100,6 +113,10 @@ func (r *budgetRepository) UpdateSpendAmount(ctx context.Context, id primitive.O
 			"$set": bson.M{"updated_at": time.Now()},
 		},
 	)
+
+	if result.MatchedCount == 0 {
+		return domain.ErrBudgetNotFound
+	}
 
 	return err
 }
