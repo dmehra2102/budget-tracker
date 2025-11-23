@@ -24,10 +24,7 @@ func NewMongoDB(cfg *config.Config) (*MongoDB, error) {
 		ApplyURI(cfg.Database.URI).
 		SetMaxPoolSize(cfg.Database.MaxPoolSize).
 		SetMinPoolSize(cfg.Database.MinPoolSize).
-		SetMaxConnIdleTime(5 * time.Minute).
-		SetServerSelectionTimeout(10 * time.Second).
-		SetRetryWrites(true).
-		SetRetryReads(true)
+		SetMaxConnIdleTime(5 * time.Minute)
 
 	client, err := mongo.Connect(ctx, clientOptions)
 	if err != nil {
